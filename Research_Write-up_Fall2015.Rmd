@@ -1,0 +1,117 @@
+---
+title: "Phytolaccoid Characteristics over Time and Space (Fall 2015)"
+author: "Gwendolyn Lloyd"
+date: "December 11, 2015"
+output: word_document
+---
+```{r, echo=FALSE}
+source('H:/Senior Year/Research-Kerkhoff Lab/R Scripts/bienscripts/BIEN_public_API.R')
+
+family_vector<-c("Phytolaccaceae", "Sarcobataceae", "Nyctaginaceae")
+family_loc_data <- BIEN.gis.family(family_vector)
+
+species_vector = unique(family_loc_data[2])
+species_vector = na.omit(species_vector)
+
+trait_vector <- c("trait_name", "Area-based photosynthesis (Aarea)", "Flowering date", "Flowering month", "Height", "Leaf area", "Leaf Cmass", "Leaf dry mass", "Leaf dry matter content (LDMC)", "Leaf Narea", "Leaf Nmass", "Leaf Parea", "Leaf Pmass", "Mass-based photosynthesis (Amass)", "seed mass", "Specific leaf area (SLA)", "Stomatal conductance (Gs)", "wood density")
+trait_data <- BIEN.trait.traitbyspecies(trait = trait_vector, species = species_vector[,1])
+```
+
+```{r, echo=FALSE}
+library(tidyr)
+trait.spread=spread(trait_data, trait_name, trait_value)
+
+trait.spread$intraspecific_rank <- NULL
+trait.spread$varsubsp <- NULL
+
+write.csv(trait.spread, file="traitspread.csv")
+traitspread <- read.csv("H:/Senior Year/Research-Kerkhoff Lab/Phytolaccoids/traitspread.csv")
+
+seeddata <- read.csv("H:/Senior Year/Research-Kerkhoff Lab/CSV Files/seed_data.csv")
+```
+
+##Abstract
+
+
+
+##Introduction
+  The aim of this study is to observe and model large scale evolutionary changes as plants adapt into new environments, as a part of a greater study to understand the Tropical Conservatism Hypothesis. Tropical Conservatism Hypothesis states that evolutionary transitions from tropical to temperate environments are relatively rare because adaptations to a colder, drier climate with seasonal variation is more difficult **CITE**. This hypothesis is supported by the greater diversity found in the tropics (Fine, 2006). In general, the hypthesis states that biome conservatism is more likely to happen along the tropics, where less changes occur (Crisp, 2009).
+
+  In this particular study, a group of three angiosperm families collectively known as “Phytolaccoids”, are used to model the changes seen as plants adapt to different environments. The Phytolaccoids are formed from the families: _Phytolaccaceae_, _Sarcobataceae_, and _Nyctaginaceae_. Due to the varying plant types ranging from pokeweed (with long leaf stalks and a fleshy taproot) to saltbush (with spiny branches and succulent leaves), these closely related species form a good model for determining adaptations. Species ranges for the Phytolaccoids span across the Americas, ranging from temperate forests to the tropics (Figure 1).
+
+![alt text](H:\Senior Year\Research-Kerkhoff Lab\SpeciesLocationMap_Alton.jpeg)      
+Figure 1. Map of Phytolaccoid families and their ranges across the Americas
+
+ In order to study these trends, we will be looking at changes in physical characteristics, such as seed size, leaf traits, in addition to plant life history, growth, and development. These traits are intended to represent the adaptations a plant needs when entering a new environment. For example, seed growth can be influenced by the aridity of the environment, with larger seeds often being seen in more arid environments **CITE and MORE**. Additionally, leaves would need to account for water loss, which occurs due to more surface area exposed on the leaf **CITE and MORE**. It is predicted that seed size would increase and leaf size would decrease further from the equator within the Americas. Likewise, these characteristics would be correlated with arid environments. These predictions reflect the assumption that arid environments are found further away from the equator.
+ 
+ 
+##Methods
+  The data for this study came from the Botanical Information and Ecology Network and from the USDA PLANTS database. From BIEN, location and trait data was extracted. The raw trait data from the BIEN database needed to be cleaned up in order to be used in R. The data found in the BIEN database also covered a small portion of the species represented by the Phytolaccoids (Figure 2). So far, preliminary investigations have been to find relationships between the species found in these families and the traits, in order to determine if there would be trends present that could then be potentially be explained by the location data. 
+
+![alt text](H:\Senior Year\Research-Kerkhoff Lab\Phytolaccoids\traitcoverage_heatmap.png)    
+Figure 2. Trait coverage found within the BIEN database for each species. Red is representative of minimal to no data coverage, and each pixel is representative of the coverage of a single trait for one species.
+
+
+##Results
+  These results are preliminary, but trends are seen amongst the speices due to growth patterns and seed mass.    
+
+###Seed Data
+```{r, echo=FALSE}
+hist(traitspread$seed.mass, xlab="Seed Mass (g)", ylab="Frequency", main="")
+text(0.16, 10, "Pisonia umbellifera")
+```      
+            
+Figure 4. Histogram of seed mass data from the BIEN database seen across the species found in the group Phytolaccoids. _Pisona umbellifera_ is an outlier in its seed size. This histogram is representative of 22 plant species.
+
+```{r, echo=FALSE}
+plot(seeddata$trait_value~seeddata$duration, xlab="Growth Duration", ylab="Seed Mass (g)")
+```        
+     
+Figure 5. Seed mass of species found in the Phytolaccoid group divided by type of growth cycle it uses. This plot is represenative of 22 plant species.
+
+
+##Discussion
+  While these are very preliminary results, they show some interesting trends that can be seen in relation to phylogenetic or climate data. _Pisona umbellifera_ is a tropical plant shows larger seeds than the other fruits (Figure 4). These plants have really interesting fruit trends, where insects and other small organisms are able to stick onto the fruit as a defense mechanism **CITE**, which may account for the large seed size to protect the seed from the sticky fruit itself. Alternatively, this may be a charachteristic seen in the tropics, which would then be the opposite of what was expected in the discussion. 
+
+  Additionally, there is a greater amount of variation in perennial seed mass (Figure 5), suggesting that this trait may be seen in a broader species range. The smaller seed mass for annual plants suggest that there may be a correlation between the two traits and that annual growth patterns is an adaptive trait seen in fewer climates. The Tropical Conservatism Hypthesis states that more plant variation is found in the tropics **CiTE**, meaning that there is a greater chance that plants that radiated out of those ecosystems were perennial themselves.
+
+  The main goal for this data currently is to compare these predicted trends with biome and climate data, to see if location and environment has a relationship with these traits. If trends are seen, then I hope to be able to explain them through phylogenetic data. Viewing these trends using the small sample of Phytolaccoids provides a baseline for other plant groups or larger samples.
+
+  Studying characteristics is really interesting, as it shows direct adaptations into a new environment rather than movement patterns and adaptations seen in time, it is representative of space. However, many of the roadblocks to this study were caused by the limited data (Figure 2). While the data currently shows interesting trends, the BIEN database provided little coverage concerning these species which causes issues with determining trends, namely whether or not the trends are representative of the entire Phytolaccoid group or if the sample is too small to dermine these trends. Another goal is to either find an additional data source, or do imputations on the data to make the coverage greater.
+  
+
+##Acknowledgements
+  The members of Kerkhoff lab were helpful in giving feedback and providing code and assistance, Alton Barbehenn, in particular. Professor Kerkhoff was extremely helpful in giving this project direction and helping make it reality. Lastly, without the participants of BIEN (The Botanical Information and Ecology Network) I would have no data to analyize, and granting us access to the database was extremely valuble. Likewise, the USDA has an open database of plant information (PLANTS) which was interesting to investigate.
+  
+  
+##Works Cited
+Crisp, Michael D., et al. "Phylogenetic biome conservatism on a global scale." Nature 458.7239 (2009): 754-756.
+Fine, Paul VA, and Richard H. Ree. "Evidence for a time‐integrated species‐area effect on the latitudinal gradient in tree diversity." The American Naturalist 168.6 (2006): 796-804.
+
+
+##R Script Used     
+###Extracting data from BIEN
+```{r}
+source('H:/Senior Year/Research-Kerkhoff Lab/R Scripts/bienscripts/BIEN_public_API.R')
+
+family_vector<-c("Phytolaccaceae", "Sarcobataceae", "Nyctaginaceae")
+family_loc_data <- BIEN.gis.family(family_vector)
+
+species_vector = unique(family_loc_data[2])
+species_vector = na.omit(species_vector)
+
+trait_vector <- c("trait_name", "Area-based photosynthesis (Aarea)", "Flowering date", "Flowering month", "Height", "Leaf area", "Leaf Cmass", "Leaf dry mass", "Leaf dry matter content (LDMC)", "Leaf Narea", "Leaf Nmass", "Leaf Parea", "Leaf Pmass", "Mass-based photosynthesis (Amass)", "seed mass", "Specific leaf area (SLA)", "Stomatal conductance (Gs)", "wood density")
+trait_data <- BIEN.trait.traitbyspecies(trait = trait_vector, species = species_vector[,1])
+```
+
+###Data Clean-up
+```{r}
+library(tidyr)
+trait.spread=spread(trait_data, trait_name, trait_value)
+
+trait.spread$intraspecific_rank <- NULL
+trait.spread$varsubsp <- NULL
+
+write.csv(trait.spread, file="traitspread.csv")
+traitspread <- read.csv("H:/Senior Year/Research-Kerkhoff Lab/Phytolaccoids/traitspread.csv")
+```
